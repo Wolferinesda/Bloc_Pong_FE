@@ -106,6 +106,11 @@ Ball.prototype.update = function(player, computer) {
     playerScore++;
     this.reset();
   }
+
+  if (playerScore >= 11 || computerScore >= 11) {
+    playerScore = 0;
+    computerScore = 0;
+  }
 };
 
 var player = new Paddle(50, 150, 10, 100);
