@@ -48,6 +48,27 @@ function Ball(x, y) {
     this.resetPostion();
     this.resetSpeed();
   };
+
+  this.stop = function() {
+    this.resetPostion();
+    this.x_speed = 0;
+    this.y_speed = 0;
+
+    if (playerScore >= 11) {
+      winner.textContent = "Congrats Player 1 you win! Sorry Player 2 better luck next time! Press restart to play again.";
+    } else if (playerScore <= 11) {
+      winner.textContent = "Sorry Player 1 you lose! Player 2 you win! Press restart to play again.";
+    };
+
+    winner.hidden = false;
+    restartButton.hidden = false;
+
+    restartButton.addEventListener("click", function(){
+      restartButton.hidden = true;
+      winner.hidden = true;
+      ball.reset();
+    });
+  };
 }
 
 Ball.prototype.move = function() {
@@ -108,11 +129,14 @@ Ball.prototype.update = function(player, computer) {
   }
 
   if (playerScore >= 11 || computerScore >= 11) {
+    this.stop();
     playerScore = 0;
     computerScore = 0;
   }
 };
 
+var restartButton = document.getElementById('restart');
+var winner = document.getElementById('winner');
 var player = new Paddle(50, 150, 10, 100);
 var computer = new Paddle(550, 150, 10, 100);
 var ball = new Ball(canvas.width / 2, canvas.height / 2);
@@ -128,7 +152,7 @@ computer.update = function(ball) {
       diff = 2;
   }
   // sets the difficulty, eventually want to randomize
-  computer.move(diff * 0.7);
+  computer.move(diff * 0.55);
 };
 // var computer = new Computer();
 

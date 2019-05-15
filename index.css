@@ -7,3 +7,11 @@ canvas {
   margin: auto;
   display: block;
 }
+
+button {
+  position: absolute;
+  top: 32%;
+  left: 46%;
+  padding: 15px 32px;
+  font-size: 16px;
+}
