@@ -9,14 +9,15 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 function Paddle(x, y, width, height) {
   this.x = x;
   this.y = y;
+  this.score = 0;
   this.height = height;
   this.width = width;
-  this.speed = 15;
+  this.speed = 12;
 };
 
 Paddle.prototype.move = function(dy) {
   if(this.y + dy > 0 && this.y + this.height + dy < canvas.height) {
-    this.y += dy;
+    this.y += dy ;
   }
 };
 
@@ -32,17 +33,32 @@ function Ball(x, y) {
   this.radius = 10;
   this.x_speed = -2;
   this.y_speed = -2;
-};
+
+  this.resetPostion = function() {
+    this.x = canvas.width / 2;
+    this.y = canvas.height / 2;
+  };
+
+  this.resetSpeed = function() {
+    this.x_speed = 2;
+    this.y_speed = -2;
+  }
+
+  this.reset = function() {
+    this.resetPostion();
+    this.resetSpeed();
+  };
+}
 
 Ball.prototype.move = function() {
   this.x += this.x_speed;
   this.y += this.y_speed;
 
   if (this.y - 5 < 0) { //hitting top wall
-      this.y_speed = -this.y_speed;
+    this.y_speed = -this.y_speed;
 
   } else if (this.y + 5 > canvas.height) { //hitting bottom wall
-      this.y_speed = -this.y_speed;
+    this.y_speed = -this.y_speed;
   }
 
   function checkCollision(paddle, axis) {
@@ -71,9 +87,34 @@ Ball.prototype.render = function() {
   c.fill();
 };
 
+Ball.prototype.update = function(player, computer) {
+  // resets the ball
+  if (this.x < 0) {
+    this.reset();
+  }
+  else if (this.x > canvas.width) {
+    this.reset();
+  }
+};
+
 var player = new Paddle(50, 100, 10, 100);
 var computer = new Paddle(550, 110, 10, 100);
 var ball = new Ball(canvas.width / 2, canvas.height / 2);
+
+computer.update = function(ball) {
+  var ball_y_position = ball.y;
+  var diff = -((computer.y + (computer.height / 2)) - ball_y_position);
+
+  if (diff < 0) {
+      diff = -2;
+  }
+  else if (diff > 0) {
+      diff = 2;
+  }
+  // sets the difficulty, eventually want to randomize
+  computer.move(diff * 0.5);
+};
+// var computer = new Computer();
 
 function addKeyEvent() {
   window.addEventListener('keydown', keyPress, true);
@@ -93,10 +134,11 @@ function keyPress(direction) {
 var animate = window.requestAnimationFrame || function(callback) { window.setTimeout(callback, 1000/60) };
 
 var step = function() {
-  c.clearRect(0,0,canvas.width,canvas.height);
+  c.clearRect(0, 0, canvas.width, canvas.height);
   c.fillStyle = "black";
   c.fillRect(0, 0, canvas.width, canvas.height);
 
+  update();
   render();
   animate(step);
 };
@@ -106,6 +148,11 @@ var render = function(){
   computer.render();
   ball.render();
   ball.move();
+};
+
+var update = function() {
+  computer.update(ball);
+  ball.update(player, computer);
 };
 
 window.onload = function(){
